@@ -1,0 +1,169 @@
+{
+    "apiVersion": "v1",
+    "kind": "List",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "labels": {
+                    "app": "payroll-service",
+                    "paymentDate": "process",
+                    "taxRate": "process",
+                    "vacationDays": "process"
+                },
+                "name": "payroll-service"
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "8080-tcp",
+                        "port": 8080,
+                        "protocol": "TCP",
+                        "targetPort": 8080
+                    }
+                ],
+                "selector": {
+                    "app": "payroll-service",
+                    "deploymentconfig": "payroll-service",
+                    "paymentDate": "process",
+                    "taxRate": "process",
+                    "vacationDays": "process"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "apps.openshift.io/v1",
+            "kind": "DeploymentConfig",
+            "metadata": {
+                "labels": {
+                    "app": "payroll-service",
+                    "paymentDate": "process",
+                    "taxRate": "process",
+                    "vacationDays": "process"
+                },
+                "name": "payroll-service"
+            },
+            "spec": {
+                "replicas": 1,
+                "revisionHistoryLimit": 10,
+                "selector": {
+                    "app": "payroll-service",
+                    "deploymentconfig": "payroll-service",
+                    "paymentDate": "process",
+                    "taxRate": "process",
+                    "vacationDays": "process"
+                },
+                "strategy": {
+                    "activeDeadlineSeconds": 21600,
+                    "resources": {},
+                    "rollingParams": {
+                        "intervalSeconds": 1,
+                        "maxSurge": "25%",
+                        "maxUnavailable": "25%",
+                        "timeoutSeconds": 600,
+                        "updatePeriodSeconds": 1
+                    },
+                    "type": "Rolling"
+                },
+                "template": {
+                    "metadata": {
+                        "labels": {
+                            "app": "payroll-service",
+                            "deploymentconfig": "payroll-service",
+                            "paymentDate": "process",
+                            "taxRate": "process",
+                            "vacationDays": "process"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "image": "payroll-service",
+                                "imagePullPolicy": "Always",
+                                "name": "payroll-service",
+                                "ports": [
+                                    {
+                                        "containerPort": 8080,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File"
+                            }
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "Always",
+                        "schedulerName": "default-scheduler",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30
+                    }
+                },
+                "test": false,
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "payroll-service"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "payroll-service:latest",
+                                "namespace": "kogito"
+                            }
+                        },
+                        "type": "ImageChange"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "route.openshift.io/v1",
+            "kind": "Route",
+            "metadata": {
+                "labels": {
+                    "app": "payroll-service",
+                    "paymentDate": "process",
+                    "taxRate": "process",
+                    "vacationDays": "process"
+                },
+                "name": "payroll-service"
+            },
+            "spec": {
+                "port": {
+                    "targetPort": "8080-tcp"
+                },
+                "to": {
+                    "kind": "Service",
+                    "name": "payroll-service",
+                    "weight": 100
+                },
+                "wildcardPolicy": "None"
+            },
+            "status": {
+                "ingress": [
+                    {
+                        "conditions": [
+                            {
+                                "status": "True",
+                                "type": "Admitted"
+                            }
+                        ],
+                        "routerName": "router",
+                        "wildcardPolicy": "None"
+                    }
+                ]
+            }
+        }
+    ]
+}

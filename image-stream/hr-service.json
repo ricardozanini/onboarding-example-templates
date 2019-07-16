@@ -1,0 +1,25 @@
+{
+    "apiVersion": "image.openshift.io/v1",
+    "kind": "ImageStream",
+    "metadata": {
+        "labels": {
+            "app": "hr-service"
+        },
+        "name": "hr-service"
+    },
+    "spec": {
+        "tags": [{
+            "name": "latest",
+            "referencePolicy": {
+                "type": "Local"
+            },
+            "from": {
+                "kind": "DockerImage",
+                "name": "quay.io/ricardozanini/hr-service:latest"
+            }
+        }],
+        "lookupPolicy": {
+            "local": false
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "apiVersion": "image.openshift.io/v1",
+    "kind": "ImageStream",
+    "metadata": {
+        "labels": {
+            "app": "payroll-service"
+        },
+        "name": "payroll-service"
+    },
+    "spec": {
+       "tags": [{
+            "name": "latest",
+            "referencePolicy": {
+                "type": "Local"
+            },
+            "from": {
+                "kind": "DockerImage",
+                "name": "quay.io/ricardozanini/payroll-service:latest"
+            }
+        }],
+        "lookupPolicy": {
+            "local": false
+        }
+    }
+}
