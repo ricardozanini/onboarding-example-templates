@@ -3,7 +3,7 @@
 1. Create the `kogito` project in your OpenShift cluster:
 
 ```
-oc create project kogito
+oc new-project kogito
 ```
 
 2. Import the image streams, from the repository root:
